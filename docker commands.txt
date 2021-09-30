@@ -4,6 +4,5 @@ az acr update -n mainapp --admin-enabled true
 docker build -t rafa-frontend .
 docker tag rafa-frontend mainapp.azurecr.io/frontend
 docker push mainapp.azurecr.io/frontend
-Ignore This
 
 
