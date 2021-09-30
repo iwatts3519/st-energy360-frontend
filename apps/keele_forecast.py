@@ -25,9 +25,6 @@ def get_missing_index(df):
             if check == 0:
                 start = i
                 check = 1
-    print(f'Start is {start}')
-    print(f'End is {end}')
-    print(f'End minus Start is {end - start}')
     return end, end - start
 
 
@@ -50,15 +47,12 @@ with open(credentials_json["LOCALFILENAMEACC"], 'wb') as my_blob2:
 
 keele_df = pd.read_csv('./Data/new_predictions.csv')
 acc_df = pd.read_csv('./Data/accuracy_frame.csv')
-print('**** Define Start ***')
-print(keele_df['PV_obs'].isna().sum())
 
 start = keele_df['PV_obs'].isna().sum() - 167
-print(f'start is {start}')
-print(keele_df)
+
 x, y = get_missing_index(keele_df)
 keele_df = keele_df.round({'PV_obs': 2})
-print(acc_df)
+
 # -------------------
 layout = dbc.Container([
     dbc.Row(

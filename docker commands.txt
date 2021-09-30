@@ -1,8 +1,8 @@
-docker build -t rafa-app .
 az login
 az acr login --name mainapp
-docker tag rafa-app mainapp.azurecr.io/mainapp
-docker push mainapp.azurecr.io/mainapp
 az acr update -n mainapp --admin-enabled true
+docker build -t rafa-frontend .
+docker tag rafa-backend mainapp.azurecr.io/frontend
+docker push mainapp.azurecr.io/frontend
 
 
