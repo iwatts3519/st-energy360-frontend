@@ -6,3 +6,4 @@ docker tag rafa-frontend mainapp.azurecr.io/frontend
 docker push mainapp.azurecr.io/frontend
 
 
+
