@@ -1,2 +1,4 @@
+# Dictates which files are left out of the docker image
 /docker commands.txt
 /env/
+/README.md

@@ -10,50 +10,32 @@ import dash_table
 import json
 
 
-def get_missing_index(df):
-    missing = pd.isna(df.PV_obs)
-    end = len(df)
-    start = 0
-    check = 0
-    for i, value in enumerate(missing):
-        if not value and check == 0:
-            continue
-        elif not value and check == 1:
-            end = i
-            break
-        else:
-            if check == 0:
-                start = i
-                check = 1
-    return end, end - start
+def fetch_new_data():
+    with open('config.json') as f:
+        credentials_json = json.load(f)
+
+    blob1 = BlobClient.from_connection_string(conn_str=credentials_json["CONNECTIONSTRING"],
+                                              container_name=credentials_json["CONTAINERNAME"],
+                                              blob_name=credentials_json["BLOBNAME"])
+    with open(credentials_json["LOCALFILENAME"], 'wb') as my_blob1:
+        blob_data = blob1.download_blob()
+        blob_data.readinto(my_blob1)
+
+    blob2 = BlobClient.from_connection_string(conn_str=credentials_json["CONNECTIONSTRING"],
+                                              container_name=credentials_json["CONTAINERNAME"],
+                                              blob_name=credentials_json["BLOBNAMEACC"])
+    with open(credentials_json["LOCALFILENAMEACC"], 'wb') as my_blob2:
+        blob_data = blob2.download_blob()
+        blob_data.readinto(my_blob2)
+
+    keele_df = pd.read_csv('./Data/new_predictions.csv')
+    acc_df = pd.read_csv('./Data/accuracy_frame.csv')
+    keele_df = keele_df.round({'PV_obs': 2})
+    return keele_df, acc_df
 
 
-with open('config.json') as f:
-    credentials_json = json.load(f)
+keele_df, acc_df = fetch_new_data()
 
-blob1 = BlobClient.from_connection_string(conn_str=credentials_json["CONNECTIONSTRING"],
-                                          container_name=credentials_json["CONTAINERNAME"],
-                                          blob_name=credentials_json["BLOBNAME"])
-with open(credentials_json["LOCALFILENAME"], 'wb') as my_blob1:
-    blob_data = blob1.download_blob()
-    blob_data.readinto(my_blob1)
-
-blob2 = BlobClient.from_connection_string(conn_str=credentials_json["CONNECTIONSTRING"],
-                                          container_name=credentials_json["CONTAINERNAME"],
-                                          blob_name=credentials_json["BLOBNAMEACC"])
-with open(credentials_json["LOCALFILENAMEACC"], 'wb') as my_blob2:
-    blob_data = blob2.download_blob()
-    blob_data.readinto(my_blob2)
-
-keele_df = pd.read_csv('./Data/new_predictions.csv')
-acc_df = pd.read_csv('./Data/accuracy_frame.csv')
-
-start = keele_df['PV_obs'].isna().sum() - 167
-
-x, y = get_missing_index(keele_df)
-keele_df = keele_df.round({'PV_obs': 2})
-
-# -------------------
 layout = dbc.Container([
     dbc.Row(
         [
@@ -167,6 +149,7 @@ layout = dbc.Container([
               Input('forecast-slider', 'value')
               )
 def update_graph(fs_value):
+    keele_df, acc_df = fetch_new_data()
     dff = keele_df[fs_value[0]:fs_value[1]]
     dff2 = acc_df
     fig = px.line(dff, x='timestamp',
@@ -179,7 +162,7 @@ def update_graph(fs_value):
     fig2 = px.line(dff2, x='timestamp',
                    y=['Actual', 'Prediction'],
                    labels={'timestamp': 'Timestamp', 'value': 'Prediction (KWH)'},
-                   title="Previous 7 days Actual vs Prediction",
+                   title="Previous 2 days Actual vs Prediction",
                    color_discrete_sequence=['red', 'orange'])  # plotting production prediction
 
     fig2.update_layout(height=350)
