@@ -150,6 +150,7 @@ layout = dbc.Container([
               )
 def update_graph(fs_value):
     keele_df, acc_df = fetch_new_data()
+    acc_df = acc_df.tail(48)
     dff = keele_df[fs_value[0]:fs_value[1]]
     dff2 = acc_df
     fig = px.line(dff, x='timestamp',
