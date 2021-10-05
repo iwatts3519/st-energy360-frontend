@@ -125,7 +125,7 @@ layout = dbc.Container([
                 dbc.CardBody([
                     html.H4('Accuracy Indicator', className='card-title'),
                     html.P(
-                        'This graph shows us an indication of the previous 7 days accuracy by comparing predictions '
+                        'This graph shows us an indication of the previous days accuracy by comparing predictions '
                         'with actual historic results.'),
                     html.P('Hover over the graph for more details or select an area of the graph to zoom in.')
                 ])
@@ -163,7 +163,7 @@ def update_graph(fs_value):
     fig2 = px.line(dff2, x='timestamp',
                    y=['Actual', 'Prediction'],
                    labels={'timestamp': 'Timestamp', 'value': 'Prediction (KWH)'},
-                   title="Previous 2 days Actual vs Prediction",
+                   title="Previous Days Actual vs Prediction",
                    color_discrete_sequence=['red', 'orange'])  # plotting production prediction
 
     fig2.update_layout(height=350)
